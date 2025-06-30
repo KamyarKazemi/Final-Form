@@ -27,6 +27,10 @@ body {
   overflow-y: auto;
 }
 
+.container h2 {
+  margin: 20px 0;
+}
+
 .card {
   display: flex;
   flex-direction: column;
@@ -224,10 +228,6 @@ select.form-input option {
   margin: 5px 0;
   border-radius: 12px;
   padding: 5px;
-}
-
-.h2-form {
-  margin: 20px 0;
 }
 
 @media (max-width: 768px) {
