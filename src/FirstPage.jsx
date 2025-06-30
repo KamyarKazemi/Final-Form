@@ -225,7 +225,7 @@ function FirstPage() {
       <h2>تماس اضطراری</h2>
 
       <div className="input-group">
-        <label className="form-label">نام تماس اضطراری</label>
+        <label className="form-label">نام فرد همراه در مواقع اضطراری</label>
         <input
           name="emergencyContactName"
           value={formData.emergencyContactName}
@@ -240,7 +240,9 @@ function FirstPage() {
       </div>
 
       <div className="input-group">
-        <label className="form-label">شماره تماس اضطراری</label>
+        <label className="form-label">
+          شماره تماس فرد همراه در مواقع اضطراری
+        </label>
         <input
           name="emergencyContactPhone"
           value={formData.emergencyContactPhone}
@@ -255,7 +257,9 @@ function FirstPage() {
       </div>
 
       <div className="input-group">
-        <label className="form-label">شماره تماس اضطراری دوم</label>
+        <label className="form-label">
+          شماره تماس فرد همراه در مواقع اضطراری (دوم)
+        </label>
         <input
           name="secondEmergencyContactPhone"
           value={formData.secondEmergencyContactPhone}
@@ -270,7 +274,9 @@ function FirstPage() {
       </div>
 
       <div className="input-group">
-        <label className="form-label">آدرس تماس اضطراری</label>
+        <label className="form-label">
+          محل سکونت فرد همراه در مواقع اضطراری
+        </label>
         <textarea
           name="emergencyContactAddress"
           value={formData.emergencyContactAddress}
