@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import FormContext from "./FormContext";
+import { exportPatientsForToday } from "./utils/exportToExcel";
 
 function FirstPage() {
   const {
@@ -46,7 +47,6 @@ function FirstPage() {
     handleEmergencyContactName,
     emergancyContactNameError,
     handleDoctor,
-    exportPatientsForToday,
   } = useContext(FormContext);
 
   const navigate = useNavigate();
