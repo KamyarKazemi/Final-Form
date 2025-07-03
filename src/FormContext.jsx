@@ -994,6 +994,45 @@ function Provider({ children }) {
 
     setIdError(cleaned.length !== 10);
     setFormData((prev) => ({ ...prev, idCode: cleaned }));
+
+    if (cleaned.length === 10) {
+      const fetchAndSearch = async () => {
+        try {
+          const response = await axios.get(
+            "https://json-backend-9caj.onrender.com/PatientsAll"
+          );
+          const patients = response.data;
+
+          const match = patients.find(
+            (patient) => patient.idCode.trim() === cleaned
+          );
+
+          if (match) {
+            console.log("found");
+
+            // Auto-fill firstName and lastName
+            setFormData((prev) => ({
+              ...prev,
+              firstName: match.firstName || "", // use actual key names
+              lastName: match.lastName || "",
+            }));
+          } else {
+            console.log("not found");
+
+            // Clear name fields if not found
+            setFormData((prev) => ({
+              ...prev,
+              firstName: "",
+              lastName: "",
+            }));
+          }
+        } catch (error) {
+          console.error("failed somehow", error);
+        }
+      };
+
+      fetchAndSearch();
+    }
   };
 
   const handleBedNum = (e) => {
@@ -1257,6 +1296,9 @@ function Provider({ children }) {
     glasgowError ||
     apacheError ||
     ageError;
+  //
+  // const searchNamesBasedOnId = (e, id) => {};
+  //
 
   const postFormData = async () => {
     try {

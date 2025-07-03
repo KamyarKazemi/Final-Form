@@ -74,28 +74,6 @@ function FirstPage() {
         <h2>اطلاعات هویتی بیمار</h2>
 
         <div className="input-group">
-          <label className="form-label">نام</label>
-          <input
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleName}
-            className="form-input"
-            required
-          />
-        </div>
-
-        <div className="input-group">
-          <label className="form-label">نام خانوادگی</label>
-          <input
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleName}
-            className="form-input"
-            required
-          />
-        </div>
-
-        <div className="input-group">
           <label className="form-label">کد ملی</label>
           <input
             name="idCode"
@@ -109,6 +87,30 @@ function FirstPage() {
               <p>کد ملی باید 10 رقم باشد</p>
             </div>
           ) : null}
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">نام</label>
+          <input
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleName}
+            className="form-input"
+            required
+            readOnly
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">نام خانوادگی</label>
+          <input
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleName}
+            className="form-input"
+            required
+            readOnly
+          />
         </div>
 
         <div className="input-group">
