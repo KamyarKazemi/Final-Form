@@ -983,83 +983,40 @@ function Provider({ children }) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  // const handleIdCode = (e) => {
-  //   const cleaned = e.target.value
-  //     .replace(/[\u06F0-\u06F9]/g, (d) =>
-  //       String.fromCharCode(d.charCodeAt(0) - 1728)
-  //     )
-  //     .replace(/\D/g, "")
-  //     .slice(0, 10);
-
-  //   setIdError(cleaned.length !== 10);
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     idCode: cleaned,
-  //     firstName: "", // Always reset first
-  //     lastName: "", // Always reset last
-  //   }));
-
-  //   // Check if ID is valid length before querying
-  //   if (cleaned.length === 10) {
-  //     const fetchAndSearch = async () => {
-  //       try {
-  //         const response = await axios.get(
-  //           "https://json-backend-9caj.onrender.com/PatientsAll"
-  //         );
-  //         const patients = response.data;
-
-  //         const match = patients.find(
-  //           (patient) => String(patient.idCode).trim() === cleaned
-  //         );
-
-  //         if (match) {
-  //           console.log("found");
-
-  //           setFormData((prev) => ({
-  //             ...prev,
-  //             firstName: match.firstName || "",
-  //             lastName: match.lastName || "",
-  //           }));
-  //         } else {
-  //           console.log("not found");
-  //           // Already cleared above — no need to clear again
-  //         }
-  //       } catch (error) {
-  //         console.error("failed somehow", error);
-  //       }
-  //     };
-
-  //     fetchAndSearch();
-  //   }
-  // };
-
   const calculateAgeFromPersianDate = (birthDate) => {
     if (!birthDate) return "";
 
     const [yearStr, monthStr, dayStr] = birthDate.split("/");
 
     const year = parseInt(yearStr, 10);
-    const month =
-      [
-        "فروردین",
-        "اردیبهشت",
-        "خرداد",
-        "تیر",
-        "مرداد",
-        "شهریور",
-        "مهر",
-        "آبان",
-        "آذر",
-        "دی",
-        "بهمن",
-        "اسفند",
-      ].indexOf(monthStr) + 1;
     const day = parseInt(dayStr, 10);
+
+    // Support both Persian names and numbers
+    const persianMonths = [
+      "فروردین",
+      "اردیبهشت",
+      "خرداد",
+      "تیر",
+      "مرداد",
+      "شهریور",
+      "مهر",
+      "آبان",
+      "آذر",
+      "دی",
+      "بهمن",
+      "اسفند",
+    ];
+
+    let month;
+
+    if (isNaN(monthStr)) {
+      month = persianMonths.indexOf(monthStr) + 1;
+    } else {
+      month = parseInt(monthStr, 10);
+    }
 
     if (!year || !month || !day) return "";
 
-    // Convert Persian to Gregorian with rough approximation
     const persianToGregorian = (jy, jm, jd) => {
       const gy = jy + 621;
       return new Date(gy, jm - 1, jd);
@@ -1086,6 +1043,8 @@ function Provider({ children }) {
       .slice(0, 10);
 
     setIdError(cleaned.length !== 10);
+
+    // Always clear everything first
     setFormData((prev) => ({
       ...prev,
       idCode: cleaned,
@@ -1121,26 +1080,36 @@ function Provider({ children }) {
           if (match) {
             console.log("found");
 
-            const age = calculateAgeFromPersianDate(match.birthDate);
+            const birthDate = match.birthDate || "";
+            const [birthYear = "", birthMonthRaw = "", birthDay = ""] =
+              birthDate.split("/");
 
-            setFormData((prev) => ({
-              ...prev,
-              age: age || "",
-            }));
+            // ✅ Convert numeric month (e.g. 5) → Persian month name
+            const persianMonths = [
+              "فروردین",
+              "اردیبهشت",
+              "خرداد",
+              "تیر",
+              "مرداد",
+              "شهریور",
+              "مهر",
+              "آبان",
+              "آذر",
+              "دی",
+              "بهمن",
+              "اسفند",
+            ];
+            const birthMonth =
+              persianMonths[parseInt(birthMonthRaw, 10) - 1] || "";
 
-            // Optional: also extract and set selectedMonth for month UI
-            const [birthYear = "", birthMonth = "", birthDay = ""] =
-              match.birthDate?.split("/") || [];
-
-            // Set dropdowns based on birthDate
-            setSelectedMonth(birthMonth);
-
-            // Make sure year is present in the dropdown
-            if (!years.includes(parseInt(birthYear))) {
+            // ✅ Ensure year appears in dropdown
+            if (birthYear && !years.includes(parseInt(birthYear))) {
               setYears((prev) => [...prev, parseInt(birthYear)]);
             }
 
-            // Set days according to selected month
+            // ✅ Sync dropdowns
+            setSelectedMonth(birthMonth);
+
             const daysInPersianMonth = {
               فروردین: 31,
               اردیبهشت: 31,
@@ -1155,21 +1124,20 @@ function Provider({ children }) {
               بهمن: 30,
               اسفند: 29,
             };
-            setDays(
-              Array.from(
-                { length: daysInPersianMonth[birthMonth] || 0 },
-                (_, i) => i + 1
-              )
-            );
+
             const dayCount = daysInPersianMonth[birthMonth] || 0;
             setDays(Array.from({ length: dayCount }, (_, i) => i + 1));
 
-            setSelectedMonth(birthMonth); // if you want the dropdown to reflect this
+            // ✅ Calculate age
+            const age = calculateAgeFromPersianDate(birthDate);
+
+            // ✅ Set full data
             setFormData((prev) => ({
               ...prev,
+              idCode: cleaned,
               firstName: match.firstName || "",
               lastName: match.lastName || "",
-              birthDate: match.birthDate || "",
+              birthDate: birthDate,
               age: age || "",
               medicalRecordNumber: match.medicalRecordNumber || "",
               phoneNumber: match.phoneNumber || "",
@@ -1525,6 +1493,7 @@ function Provider({ children }) {
         emergancyContactNameError,
         handleDoctor,
         handleBedNum,
+        setAgeError,
       }}
     >
       {children}

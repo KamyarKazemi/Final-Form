@@ -130,7 +130,7 @@ function FirstPage() {
           ) : null}
         </div>
 
-        {/* <div className="input-group">
+        <div className="input-group">
           <label className="form-label">سن</label>
           <input
             name="age"
@@ -139,21 +139,13 @@ function FirstPage() {
             className="form-input"
             required
             readOnly
-          /> */}
-        <div className="input-group">
-          <label className="form-label">سن</label>
-          <input
-            name="age"
-            value={formData.age}
-            className="form-input"
-            readOnly
           />
+          {ageError ? (
+            <div className="idError">
+              <p>سن نامعتبر است</p>
+            </div>
+          ) : null}
         </div>
-        {ageError ? (
-          <div className="idError">
-            <p>سن نامعتبر است</p>
-          </div>
-        ) : null}
 
         <div className="input-group">
           <label className="form-label">شماره تماس</label>
