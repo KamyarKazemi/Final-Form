@@ -121,6 +121,7 @@ function FirstPage() {
             onChange={handleMedicalRecordNumber}
             className="form-input"
             required
+            readOnly
           />
           {medicalRecordError ? (
             <div className="idError">
@@ -129,7 +130,7 @@ function FirstPage() {
           ) : null}
         </div>
 
-        <div className="input-group">
+        {/* <div className="input-group">
           <label className="form-label">سن</label>
           <input
             name="age"
@@ -137,13 +138,22 @@ function FirstPage() {
             onChange={handleAge}
             className="form-input"
             required
+            readOnly
+          /> */}
+        <div className="input-group">
+          <label className="form-label">سن</label>
+          <input
+            name="age"
+            value={formData.age}
+            className="form-input"
+            readOnly
           />
-          {ageError ? (
-            <div className="idError">
-              <p>سن نامعتبر است</p>
-            </div>
-          ) : null}
         </div>
+        {ageError ? (
+          <div className="idError">
+            <p>سن نامعتبر است</p>
+          </div>
+        ) : null}
 
         <div className="input-group">
           <label className="form-label">شماره تماس</label>
@@ -153,6 +163,7 @@ function FirstPage() {
             onChange={handlePhoneNumber}
             className="form-input"
             required
+            readOnly
           />
           {phoneNumberError ? (
             <div className="idError">
@@ -163,20 +174,34 @@ function FirstPage() {
 
         <div className="input-group">
           <label className="form-label-2">تاریخ تولد (سال، ماه، روز)</label>
-          <select onChange={handleYearChange} className="form-input">
+
+          <select
+            onChange={handleYearChange}
+            className="form-input"
+            value={formData.birthDate?.split("/")?.[0] || ""}
+            disabled
+          >
             {years.map((y) => (
               <option key={y}>{y}</option>
             ))}
           </select>
-          <select onChange={handleMonthChange} className="form-input">
+
+          <select
+            onChange={handleMonthChange}
+            className="form-input"
+            value={selectedMonth || ""}
+            disabled
+          >
             {months.map((m, i) => (
               <option key={i}>{m}</option>
             ))}
           </select>
+
           <select
             onChange={handleDayChange}
-            disabled={!selectedMonth}
             className="form-input"
+            value={formData.birthDate?.split("/")?.[2] || ""}
+            disabled={!selectedMonth}
           >
             {days.map((d) => (
               <option key={d}>{d}</option>
@@ -192,6 +217,7 @@ function FirstPage() {
             onChange={handleInputChange}
             className="form-input"
             required
+            readOnly
           />
         </div>
 
@@ -204,6 +230,7 @@ function FirstPage() {
             value={formData.insuranceCompany}
             onChange={handleInputChange}
             className="form-input"
+            readOnly
           >
             {def.insuranceCompanyOptions.map((item, i) => (
               <option key={i}>{item}</option>
@@ -218,6 +245,7 @@ function FirstPage() {
             value={formData.insurancePolicyNumber}
             onChange={handleInsurancePolicyNumber}
             className="form-input"
+            readOnly
           />
           {insuranceError ? (
             <div className="idError">
@@ -235,6 +263,7 @@ function FirstPage() {
             value={formData.emergencyContactName}
             onChange={handleEmergencyContactName}
             className="form-input"
+            readOnly
           />
           {emergancyContactNameError ? (
             <div className="idError">
@@ -252,6 +281,7 @@ function FirstPage() {
             value={formData.emergencyContactPhone}
             onChange={handleEmergencyContactPhone}
             className="form-input"
+            readOnly
           />
           {emergencyContactError ? (
             <div className="idError">
@@ -269,6 +299,7 @@ function FirstPage() {
             value={formData.secondEmergencyContactPhone}
             onChange={handleSecondEmergencyContactPhone}
             className="form-input"
+            readOnly
           />
           {secondEmergencyContactError ? (
             <div className="idError">
@@ -286,6 +317,7 @@ function FirstPage() {
             value={formData.emergencyContactAddress}
             onChange={handleInputChange}
             className="form-input"
+            readOnly
           />
         </div>
 
@@ -298,6 +330,7 @@ function FirstPage() {
             value={formData.admissionWeight}
             onChange={handleWeight}
             className="form-input"
+            readOnly
           />
           {weightError ? (
             <div className="idError">
@@ -313,6 +346,7 @@ function FirstPage() {
             value={formData.admissionHeight}
             onChange={handleHeight}
             className="form-input"
+            readOnly
           />
           {heightError ? (
             <div className="idError">
@@ -328,6 +362,7 @@ function FirstPage() {
             value={formData.vitalSignsOnAdmission}
             onChange={handleVitalSigns}
             className="form-input"
+            readOnly
           />
           {vitalSignsError ? (
             <div className="idError">
@@ -343,6 +378,7 @@ function FirstPage() {
             value={formData.glasgowComaScale}
             onChange={handleGlasgowComaScale}
             className="form-input"
+            readOnly
           />
           {glasgowError ? (
             <div className="idError">
@@ -358,6 +394,7 @@ function FirstPage() {
             value={formData.apacheScore}
             onChange={handleApacheScore}
             className="form-input"
+            readOnly
           />
           {apacheError ? (
             <div className="idError">
@@ -374,6 +411,7 @@ function FirstPage() {
             value={formData.referringDoctor}
             onChange={handleDoctor}
             required
+            readOnly
           />
         </div>
 
@@ -385,6 +423,7 @@ function FirstPage() {
             value={formData.bedNumber}
             onChange={handleBedNum}
             required
+            readOnly
           />
         </div>
 

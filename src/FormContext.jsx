@@ -984,6 +984,99 @@ function Provider({ children }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // const handleIdCode = (e) => {
+  //   const cleaned = e.target.value
+  //     .replace(/[\u06F0-\u06F9]/g, (d) =>
+  //       String.fromCharCode(d.charCodeAt(0) - 1728)
+  //     )
+  //     .replace(/\D/g, "")
+  //     .slice(0, 10);
+
+  //   setIdError(cleaned.length !== 10);
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     idCode: cleaned,
+  //     firstName: "", // Always reset first
+  //     lastName: "", // Always reset last
+  //   }));
+
+  //   // Check if ID is valid length before querying
+  //   if (cleaned.length === 10) {
+  //     const fetchAndSearch = async () => {
+  //       try {
+  //         const response = await axios.get(
+  //           "https://json-backend-9caj.onrender.com/PatientsAll"
+  //         );
+  //         const patients = response.data;
+
+  //         const match = patients.find(
+  //           (patient) => String(patient.idCode).trim() === cleaned
+  //         );
+
+  //         if (match) {
+  //           console.log("found");
+
+  //           setFormData((prev) => ({
+  //             ...prev,
+  //             firstName: match.firstName || "",
+  //             lastName: match.lastName || "",
+  //           }));
+  //         } else {
+  //           console.log("not found");
+  //           // Already cleared above — no need to clear again
+  //         }
+  //       } catch (error) {
+  //         console.error("failed somehow", error);
+  //       }
+  //     };
+
+  //     fetchAndSearch();
+  //   }
+  // };
+
+  const calculateAgeFromPersianDate = (birthDate) => {
+    if (!birthDate) return "";
+
+    const [yearStr, monthStr, dayStr] = birthDate.split("/");
+
+    const year = parseInt(yearStr, 10);
+    const month =
+      [
+        "فروردین",
+        "اردیبهشت",
+        "خرداد",
+        "تیر",
+        "مرداد",
+        "شهریور",
+        "مهر",
+        "آبان",
+        "آذر",
+        "دی",
+        "بهمن",
+        "اسفند",
+      ].indexOf(monthStr) + 1;
+    const day = parseInt(dayStr, 10);
+
+    if (!year || !month || !day) return "";
+
+    // Convert Persian to Gregorian with rough approximation
+    const persianToGregorian = (jy, jm, jd) => {
+      const gy = jy + 621;
+      return new Date(gy, jm - 1, jd);
+    };
+
+    const birth = persianToGregorian(year, month, day);
+    const today = new Date();
+
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
+  };
+
   const handleIdCode = (e) => {
     const cleaned = e.target.value
       .replace(/[\u06F0-\u06F9]/g, (d) =>
@@ -993,7 +1086,25 @@ function Provider({ children }) {
       .slice(0, 10);
 
     setIdError(cleaned.length !== 10);
-    setFormData((prev) => ({ ...prev, idCode: cleaned }));
+    setFormData((prev) => ({
+      ...prev,
+      idCode: cleaned,
+      firstName: "",
+      lastName: "",
+      birthDate: "",
+      age: "",
+      medicalRecordNumber: "",
+      phoneNumber: "",
+      fullAddress: "",
+      insuranceCompany: "",
+      insurancePolicyNumber: "",
+      admissionWeight: "",
+      admissionHeight: "",
+      glasgowComaScale: "",
+      apacheScore: "",
+      referringDoctor: "",
+      bedNumber: "",
+    }));
 
     if (cleaned.length === 10) {
       const fetchAndSearch = async () => {
@@ -1004,27 +1115,76 @@ function Provider({ children }) {
           const patients = response.data;
 
           const match = patients.find(
-            (patient) => patient.idCode.trim() === cleaned
+            (patient) => String(patient.idCode).trim() === cleaned
           );
 
           if (match) {
             console.log("found");
 
-            // Auto-fill firstName and lastName
+            const age = calculateAgeFromPersianDate(match.birthDate);
+
             setFormData((prev) => ({
               ...prev,
-              firstName: match.firstName || "", // use actual key names
+              age: age || "",
+            }));
+
+            // Optional: also extract and set selectedMonth for month UI
+            const [birthYear = "", birthMonth = "", birthDay = ""] =
+              match.birthDate?.split("/") || [];
+
+            // Set dropdowns based on birthDate
+            setSelectedMonth(birthMonth);
+
+            // Make sure year is present in the dropdown
+            if (!years.includes(parseInt(birthYear))) {
+              setYears((prev) => [...prev, parseInt(birthYear)]);
+            }
+
+            // Set days according to selected month
+            const daysInPersianMonth = {
+              فروردین: 31,
+              اردیبهشت: 31,
+              خرداد: 31,
+              تیر: 31,
+              مرداد: 31,
+              شهریور: 31,
+              مهر: 30,
+              آبان: 30,
+              آذر: 30,
+              دی: 30,
+              بهمن: 30,
+              اسفند: 29,
+            };
+            setDays(
+              Array.from(
+                { length: daysInPersianMonth[birthMonth] || 0 },
+                (_, i) => i + 1
+              )
+            );
+            const dayCount = daysInPersianMonth[birthMonth] || 0;
+            setDays(Array.from({ length: dayCount }, (_, i) => i + 1));
+
+            setSelectedMonth(birthMonth); // if you want the dropdown to reflect this
+            setFormData((prev) => ({
+              ...prev,
+              firstName: match.firstName || "",
               lastName: match.lastName || "",
+              birthDate: match.birthDate || "",
+              age: age || "",
+              medicalRecordNumber: match.medicalRecordNumber || "",
+              phoneNumber: match.phoneNumber || "",
+              fullAddress: match.fullAddress || "",
+              insuranceCompany: match.insuranceCompany || "",
+              insurancePolicyNumber: match.insurancePolicyNumber || "",
+              admissionWeight: match.admissionWeight || "",
+              admissionHeight: match.admissionHeight || "",
+              glasgowComaScale: match.glasgowComaScale || "",
+              apacheScore: match.apacheScore || "",
+              referringDoctor: match.referringDoctor || "",
+              bedNumber: match.bedNumber || "",
             }));
           } else {
             console.log("not found");
-
-            // Clear name fields if not found
-            setFormData((prev) => ({
-              ...prev,
-              firstName: "",
-              lastName: "",
-            }));
           }
         } catch (error) {
           console.error("failed somehow", error);
