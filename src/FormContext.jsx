@@ -1035,6 +1035,8 @@ function Provider({ children }) {
   };
 
   const handleIdCode = (e) => {
+    console.log("🔍 handleIdCode triggered", e.target.value);
+
     const cleaned = e.target.value
       .replace(/[\u06F0-\u06F9]/g, (d) =>
         String.fromCharCode(d.charCodeAt(0) - 1728)
@@ -1072,6 +1074,7 @@ function Provider({ children }) {
             "https://json-backend-9caj.onrender.com/PatientsAll"
           );
           const patients = response.data;
+          console.log("📡 Fetching PatientsAll…");
 
           const match = patients.find(
             (patient) => String(patient.idCode).trim() === cleaned
