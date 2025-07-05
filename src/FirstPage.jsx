@@ -17,9 +17,9 @@ function FirstPage() {
     handleInsurancePolicyNumber,
     handleEmergencyContactPhone,
     handleSecondEmergencyContactPhone,
+    handleVitalSigns,
     handleWeight,
     handleHeight,
-    handleVitalSigns,
     handleGlasgowComaScale,
     handleApacheScore,
     idError,
@@ -50,6 +50,8 @@ function FirstPage() {
     doctors,
     handleDoctorChange,
     handleTimeOfWorkChange,
+    handleNurseChange,
+    nurses,
   } = useContext(FormContext);
 
   const navigate = useNavigate();
@@ -196,7 +198,7 @@ function FirstPage() {
             onChange={handleDayChange}
             className="form-input"
             value={formData.birthDate?.split("/")?.[2] || ""}
-            disabled={!selectedMonth}
+            disabled
           >
             {days.map((d) => (
               <option key={d}>{d}</option>
@@ -225,7 +227,7 @@ function FirstPage() {
             value={formData.insuranceCompany}
             onChange={handleInputChange}
             className="form-input"
-            readOnly
+            disabled
           >
             {def.insuranceCompanyOptions.map((item, i) => (
               <option key={i}>{item}</option>
@@ -258,7 +260,6 @@ function FirstPage() {
             value={formData.emergencyContactName}
             onChange={handleEmergencyContactName}
             className="form-input"
-            readOnly
           />
           {emergancyContactNameError ? (
             <div className="idError">
@@ -276,7 +277,6 @@ function FirstPage() {
             value={formData.emergencyContactPhone}
             onChange={handleEmergencyContactPhone}
             className="form-input"
-            readOnly
           />
           {emergencyContactError ? (
             <div className="idError">
@@ -294,7 +294,6 @@ function FirstPage() {
             value={formData.secondEmergencyContactPhone}
             onChange={handleSecondEmergencyContactPhone}
             className="form-input"
-            readOnly
           />
           {secondEmergencyContactError ? (
             <div className="idError">
@@ -312,7 +311,6 @@ function FirstPage() {
             value={formData.emergencyContactAddress}
             onChange={handleInputChange}
             className="form-input"
-            readOnly
           />
         </div>
 
@@ -348,66 +346,6 @@ function FirstPage() {
               <p>قد نامعتبر است</p>
             </div>
           ) : null}
-        </div>
-
-        <div className="input-group">
-          <label className="form-label">علائم حیاتی</label>
-          <textarea
-            name="vitalSignsOnAdmission"
-            value={formData.vitalSignsOnAdmission}
-            onChange={handleVitalSigns}
-            className="form-input"
-            readOnly
-          />
-          {vitalSignsError ? (
-            <div className="idError">
-              <p>علائم حیاتی باید کامل باشد</p>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="input-group">
-          <label className="form-label">GCS</label>
-          <input
-            name="glasgowComaScale"
-            value={formData.glasgowComaScale}
-            onChange={handleGlasgowComaScale}
-            className="form-input"
-            readOnly
-          />
-          {glasgowError ? (
-            <div className="idError">
-              <p>مقیاس GCS باید بین 3 تا 15 باشد</p>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="input-group">
-          <label className="form-label">APACHE II</label>
-          <input
-            name="apacheScore"
-            value={formData.apacheScore}
-            onChange={handleApacheScore}
-            className="form-input"
-            readOnly
-          />
-          {apacheError ? (
-            <div className="idError">
-              <p>امتیاز APACHE II باید بین 0 تا 71 باشد</p>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="input-group">
-          <label className="form-label">شماره تخت</label>
-          <input
-            type="number"
-            className="form-input"
-            value={formData.bedNumber}
-            onChange={handleBedNum}
-            required
-            readOnly
-          />
         </div>
 
         {/* 👨‍⚕️ Select Doctor */}
@@ -492,6 +430,7 @@ function FirstPage() {
               value={formData.selectedTimeOfWork}
               onChange={handleTimeOfWorkChange}
             >
+              <option value="">انتخاب کنید</option>
               {(
                 doctors.find(
                   (d) => d.doctorIdCode === formData.selectedDoctorId
@@ -504,6 +443,108 @@ function FirstPage() {
             </select>
           </div>
         )}
+
+        <div className="input-group">
+          <label className="form-label">لیست پرستاران</label>
+          <select
+            className="form-input"
+            value={formData.selectedNurseId}
+            onChange={handleNurseChange}
+          >
+            <option value="">انتخاب کنید</option>
+            {nurses.map((n) => (
+              <option key={n.nurseIdCode} value={n.nurseIdCode}>
+                {n.firstName} {n.lastName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">علائم حیاتی</label>
+          <textarea
+            name="vitalSignsOnAdmission"
+            value={formData.vitalSignsOnAdmission}
+            onChange={handleVitalSigns}
+            className="form-input"
+          />
+          {vitalSignsError && (
+            <div className="idError">
+              <p>علائم حیاتی باید کامل باشد</p>
+            </div>
+          )}
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">شیفت پرستار</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.nurseShift}
+            readOnly
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">کد ملی پرستار</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.nurseIdCode}
+            readOnly
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">کد نظام پزشکی پرستار</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.nurseMedicalSystemCode}
+            readOnly
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">شماره تخت</label>
+          <input
+            type="number"
+            className="form-input"
+            value={formData.bedNumber}
+            onChange={handleBedNum}
+            required
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">GCS</label>
+          <input
+            name="glasgowComaScale"
+            value={formData.glasgowComaScale}
+            onChange={handleGlasgowComaScale}
+            className="form-input"
+          />
+          {glasgowError ? (
+            <div className="idError">
+              <p>مقیاس GCS باید بین 3 تا 15 باشد</p>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">APACHE II</label>
+          <input
+            name="apacheScore"
+            value={formData.apacheScore}
+            onChange={handleApacheScore}
+            className="form-input"
+          />
+          {apacheError ? (
+            <div className="idError">
+              <p>امتیاز APACHE II باید بین 0 تا 71 باشد</p>
+            </div>
+          ) : null}
+        </div>
 
         <button type="submit" className="form-button">
           مرحله بعد

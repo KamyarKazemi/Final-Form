@@ -59,6 +59,10 @@ const defaultFormData = {
   specification: "",
   shift: "",
   selectedTimeOfWork: "",
+  selectedNurseId: "",
+  nurseShift: "",
+  nurseMedicalSystemCode: "",
+  nurseIdCode: "",
 };
 
 function Provider({ children }) {
@@ -985,6 +989,7 @@ function Provider({ children }) {
   const [glasgowError, setGlasgowError] = useState(false);
   const [apacheError, setApacheError] = useState(false);
   const [doctors, setDoctors] = useState([]);
+  const [nurses, setNurses] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -1174,34 +1179,6 @@ function Provider({ children }) {
     }
   };
 
-  // const handleDoctorChange = (e) => {
-  //   const selectedId = e.target.value;
-  //   const doctor = doctors.find((doc) => doc.doctorIdCode === selectedId);
-
-  //   if (doctor) {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       selectedDoctorId: selectedId,
-  //       doctorIdCode: doctor.doctorIdCode,
-  //       medicalSystemCode: doctor.medicalSystemCode,
-  //       specification: doctor.specification,
-  //       shift: doctor.shift,
-  //       selectedTimeOfWork: doctor.timeOfWork[0] || "",
-  //     }));
-  //   } else {
-  //     // Reset doctor-related data if cleared
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       selectedDoctorId: "",
-  //       doctorIdCode: "",
-  //       medicalSystemCode: "",
-  //       specification: "",
-  //       shift: "",
-  //       selectedTimeOfWork: "",
-  //     }));
-  //   }
-  // };
-
   const handleDoctorChange = (e) => {
     const selectedId = e.target.value;
     const doctor = doctors.find((doc) => doc.doctorIdCode === selectedId);
@@ -1228,6 +1205,29 @@ function Provider({ children }) {
         selectedTimeOfWork: "",
         referringDoctor: "",
       }));
+    }
+  };
+
+  const handleNurseChange = (e) => {
+    const selectedId = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      selectedNurseId: selectedId,
+    }));
+
+    const selectedNurse = nurses.find((n) => n.nurseIdCode === selectedId);
+    console.log("Nurse selected:", selectedNurse);
+
+    if (selectedNurse) {
+      setFormData((prev) => ({
+        ...prev,
+        vitalSignsOnAdmission: selectedNurse.vitalSignsOnAdmission || "",
+        nurseShift: selectedNurse.nurseShift || "",
+        nurseMedicalSystemCode: selectedNurse.medicalSystemCode || "",
+        nurseIdCode: selectedNurse.nurseIdCode || "",
+      }));
+    } else {
+      console.warn("Nurse not found");
     }
   };
 
@@ -1382,7 +1382,8 @@ function Provider({ children }) {
       .replace(/\D/g, "")
       .slice(0, 2);
 
-    setGlasgowError(val < 3 || val > 15);
+    const num = Number(val);
+    setGlasgowError(num < 3 || num > 15);
     setFormData((prev) => ({ ...prev, glasgowComaScale: val }));
   };
 
@@ -1394,7 +1395,8 @@ function Provider({ children }) {
       .replace(/\D/g, "")
       .slice(0, 2);
 
-    setApacheError(val < 0 || val > 71);
+    const num = Number(val);
+    setApacheError(num < 0 || num > 71);
     setFormData((prev) => ({ ...prev, apacheScore: val }));
   };
 
@@ -1515,10 +1517,23 @@ function Provider({ children }) {
         console.error("❌ Error fetching doctors:", error);
       }
     };
+    const fetchNurses = async () => {
+      try {
+        const response = await axios.get(
+          "https://json-backend-9caj.onrender.com/Nurses"
+        );
+        console.log("Fetched nurses:", response.data);
+        setNurses(response.data);
+      } catch (error) {
+        console.error("❌ Error fetching nurses:", error);
+      }
+    };
     fetchDoctors();
+    fetchNurses();
   }, []);
 
   const postFormData = async () => {
+    alert("لطفا صبر کنید.");
     try {
       const response = await axios.post(
         "https://json-backend-9caj.onrender.com/PatientInformation",
@@ -1587,6 +1602,8 @@ function Provider({ children }) {
         doctors,
         handleDoctorChange,
         handleTimeOfWorkChange,
+        handleNurseChange,
+        nurses,
       }}
     >
       {children}
