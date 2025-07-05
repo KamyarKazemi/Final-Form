@@ -47,6 +47,9 @@ function FirstPage() {
     handleEmergencyContactName,
     emergancyContactNameError,
     handleDoctor,
+    doctors,
+    handleDoctorChange,
+    handleTimeOfWorkChange,
   } = useContext(FormContext);
 
   const navigate = useNavigate();
@@ -396,6 +399,35 @@ function FirstPage() {
         </div>
 
         <div className="input-group">
+          <label className="form-label">شماره تخت</label>
+          <input
+            type="number"
+            className="form-input"
+            value={formData.bedNumber}
+            onChange={handleBedNum}
+            required
+            readOnly
+          />
+        </div>
+
+        {/* 👨‍⚕️ Select Doctor */}
+        <div className="input-group">
+          <label className="form-label">لیست پزشکان در دسترس</label>
+          <select
+            className="form-input"
+            value={formData.selectedDoctorId}
+            onChange={handleDoctorChange}
+          >
+            <option value="">انتخاب کنید</option>
+            {doctors.map((doc) => (
+              <option key={doc.doctorIdCode} value={doc.doctorIdCode}>
+                {doc.doctorFirstName} {doc.doctorLastName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group">
           <label className="form-label">پزشک ارجاع دهنده</label>
           <input
             type="text"
@@ -407,17 +439,71 @@ function FirstPage() {
           />
         </div>
 
+        {/* 🪪 Doctor ID */}
         <div className="input-group">
-          <label className="form-label">شماره تخت</label>
+          <label className="form-label">کد ملی پزشک</label>
           <input
-            type="number"
+            type="text"
             className="form-input"
-            value={formData.bedNumber}
-            onChange={handleBedNum}
-            required
+            value={formData.doctorIdCode}
             readOnly
           />
         </div>
+
+        {/* 🏥 Medical System Code */}
+        <div className="input-group">
+          <label className="form-label">کد نظام پزشکی</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.medicalSystemCode}
+            readOnly
+          />
+        </div>
+
+        {/* 🎓 Specification */}
+        <div className="input-group">
+          <label className="form-label">تخصص</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.specification}
+            readOnly
+          />
+        </div>
+
+        {/* ⏰ Shift */}
+        <div className="input-group">
+          <label className="form-label">شیفت</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.shift}
+            readOnly
+          />
+        </div>
+
+        {/* 🕐 Available Times */}
+        {formData.selectedDoctorId && (
+          <div className="input-group">
+            <label className="form-label">زمان‌های در دسترس</label>
+            <select
+              className="form-input"
+              value={formData.selectedTimeOfWork}
+              onChange={handleTimeOfWorkChange}
+            >
+              {(
+                doctors.find(
+                  (d) => d.doctorIdCode === formData.selectedDoctorId
+                )?.timeOfWork || []
+              ).map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <button type="submit" className="form-button">
           مرحله بعد

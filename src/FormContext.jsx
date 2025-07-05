@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import { addPatientToStorage } from "./utils/exportToExcel";
 
@@ -53,6 +53,12 @@ const defaultFormData = {
   modeOfArrival: "",
   referringDoctor: "",
   bedNumber: "",
+  selectedDoctorId: "",
+  doctorIdCode: "",
+  medicalSystemCode: "",
+  specification: "",
+  shift: "",
+  selectedTimeOfWork: "",
 };
 
 function Provider({ children }) {
@@ -978,6 +984,7 @@ function Provider({ children }) {
   const [vitalSignsError, setVitalSignsError] = useState(false);
   const [glasgowError, setGlasgowError] = useState(false);
   const [apacheError, setApacheError] = useState(false);
+  const [doctors, setDoctors] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -1165,6 +1172,71 @@ function Provider({ children }) {
 
       fetchAndSearch();
     }
+  };
+
+  // const handleDoctorChange = (e) => {
+  //   const selectedId = e.target.value;
+  //   const doctor = doctors.find((doc) => doc.doctorIdCode === selectedId);
+
+  //   if (doctor) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       selectedDoctorId: selectedId,
+  //       doctorIdCode: doctor.doctorIdCode,
+  //       medicalSystemCode: doctor.medicalSystemCode,
+  //       specification: doctor.specification,
+  //       shift: doctor.shift,
+  //       selectedTimeOfWork: doctor.timeOfWork[0] || "",
+  //     }));
+  //   } else {
+  //     // Reset doctor-related data if cleared
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       selectedDoctorId: "",
+  //       doctorIdCode: "",
+  //       medicalSystemCode: "",
+  //       specification: "",
+  //       shift: "",
+  //       selectedTimeOfWork: "",
+  //     }));
+  //   }
+  // };
+
+  const handleDoctorChange = (e) => {
+    const selectedId = e.target.value;
+    const doctor = doctors.find((doc) => doc.doctorIdCode === selectedId);
+
+    if (doctor) {
+      setFormData((prev) => ({
+        ...prev,
+        selectedDoctorId: selectedId,
+        doctorIdCode: doctor.doctorIdCode,
+        medicalSystemCode: doctor.medicalSystemCode,
+        specification: doctor.specification,
+        shift: doctor.shift,
+        selectedTimeOfWork: doctor.timeOfWork[0] || "",
+        referringDoctor: `${doctor.doctorFirstName} ${doctor.doctorLastName}`,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        selectedDoctorId: "",
+        doctorIdCode: "",
+        medicalSystemCode: "",
+        specification: "",
+        shift: "",
+        selectedTimeOfWork: "",
+        referringDoctor: "",
+      }));
+    }
+  };
+
+  const handleTimeOfWorkChange = (e) => {
+    const selectedTime = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      selectedTimeOfWork: selectedTime,
+    }));
   };
 
   const handleBedNum = (e) => {
@@ -1432,6 +1504,20 @@ function Provider({ children }) {
   // const searchNamesBasedOnId = (e, id) => {};
   //
 
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get(
+          "https://json-backend-9caj.onrender.com/Doctors"
+        );
+        setDoctors(response.data);
+      } catch (error) {
+        console.error("❌ Error fetching doctors:", error);
+      }
+    };
+    fetchDoctors();
+  }, []);
+
   const postFormData = async () => {
     try {
       const response = await axios.post(
@@ -1498,6 +1584,9 @@ function Provider({ children }) {
         handleDoctor,
         handleBedNum,
         setAgeError,
+        doctors,
+        handleDoctorChange,
+        handleTimeOfWorkChange,
       }}
     >
       {children}
