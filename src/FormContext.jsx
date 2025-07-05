@@ -1071,7 +1071,8 @@ function Provider({ children }) {
       const fetchAndSearch = async () => {
         try {
           const response = await axios.get(
-            "https://json-backend-9caj.onrender.com/PatientsAll"
+            "https://json-backend-9caj.onrender.com/PatientsAll",
+            { timeout: 60000 }
           );
           const patients = response.data;
           console.log("📡 Fetching PatientsAll…");
