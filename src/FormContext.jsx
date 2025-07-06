@@ -1233,9 +1233,20 @@ function Provider({ children }) {
 
   const handleTimeOfWorkChange = (e) => {
     const selectedTime = e.target.value;
+
+    const getShiftFromPersianText = (text) => {
+      if (text.includes("صبح")) return "صبح";
+      if (text.includes("عصر")) return "عصر";
+      if (text.includes("شب")) return "شب";
+      return "نامشخص";
+    };
+
+    const shift = selectedTime ? getShiftFromPersianText(selectedTime) : "";
+
     setFormData((prev) => ({
       ...prev,
       selectedTimeOfWork: selectedTime,
+      shift,
     }));
   };
 
@@ -1459,6 +1470,28 @@ function Provider({ children }) {
     });
   };
 
+  const handleWeightBlur = () => {
+    setFormData((prev) => {
+      const val = parseInt(prev.admissionWeight);
+      if (!val) return prev;
+      return {
+        ...prev,
+        admissionWeight: `${val}\u200E kg`,
+      };
+    });
+  };
+
+  const handleHeightBlur = () => {
+    setFormData((prev) => {
+      const val = parseInt(prev.admissionHeight);
+      if (!val) return prev;
+      return {
+        ...prev,
+        admissionHeight: `${val}\u200E cm`,
+      };
+    });
+  };
+
   const handleCheckboxChange = (category, value, isChecked) => {
     const fieldName =
       category === "bloodTypes"
@@ -1604,6 +1637,8 @@ function Provider({ children }) {
         handleTimeOfWorkChange,
         handleNurseChange,
         nurses,
+        handleHeightBlur,
+        handleWeightBlur,
       }}
     >
       {children}

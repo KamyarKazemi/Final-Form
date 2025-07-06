@@ -46,12 +46,13 @@ function FirstPage() {
     setIsAnyError,
     handleEmergencyContactName,
     emergancyContactNameError,
-    handleDoctor,
     doctors,
     handleDoctorChange,
     handleTimeOfWorkChange,
     handleNurseChange,
     nurses,
+    handleHeightBlur,
+    handleWeightBlur,
   } = useContext(FormContext);
 
   const navigate = useNavigate();
@@ -317,39 +318,6 @@ function FirstPage() {
         <h2>ارزیابی بالینی</h2>
 
         <div className="input-group">
-          <label className="form-label">وزن پذیرش</label>
-          <input
-            name="admissionWeight"
-            value={formData.admissionWeight}
-            onChange={handleWeight}
-            className="form-input"
-            readOnly
-          />
-          {weightError ? (
-            <div className="idError">
-              <p>وزن نامعتبر است</p>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="input-group">
-          <label className="form-label">قد پذیرش</label>
-          <input
-            name="admissionHeight"
-            value={formData.admissionHeight}
-            onChange={handleHeight}
-            className="form-input"
-            readOnly
-          />
-          {heightError ? (
-            <div className="idError">
-              <p>قد نامعتبر است</p>
-            </div>
-          ) : null}
-        </div>
-
-        {/* 👨‍⚕️ Select Doctor */}
-        <div className="input-group">
           <label className="form-label">لیست پزشکان در دسترس</label>
           <select
             className="form-input"
@@ -358,45 +326,14 @@ function FirstPage() {
           >
             <option value="">انتخاب کنید</option>
             {doctors.map((doc) => (
-              <option key={doc.doctorIdCode} value={doc.doctorIdCode}>
-                {doc.doctorFirstName} {doc.doctorLastName}
+              <option
+                key={`${doc.doctorIdCode}-${doc.specification}`}
+                value={doc.doctorIdCode}
+              >
+                {doc.doctorFirstName} {doc.doctorLastName} - {doc.specification}
               </option>
             ))}
           </select>
-        </div>
-
-        <div className="input-group">
-          <label className="form-label">پزشک ارجاع دهنده</label>
-          <input
-            type="text"
-            className="form-input"
-            value={formData.referringDoctor}
-            onChange={handleDoctor}
-            required
-            readOnly
-          />
-        </div>
-
-        {/* 🪪 Doctor ID */}
-        <div className="input-group">
-          <label className="form-label">کد ملی پزشک</label>
-          <input
-            type="text"
-            className="form-input"
-            value={formData.doctorIdCode}
-            readOnly
-          />
-        </div>
-
-        {/* 🏥 Medical System Code */}
-        <div className="input-group">
-          <label className="form-label">کد نظام پزشکی</label>
-          <input
-            type="text"
-            className="form-input"
-            value={formData.medicalSystemCode}
-            readOnly
-          />
         </div>
 
         {/* 🎓 Specification */}
@@ -406,17 +343,6 @@ function FirstPage() {
             type="text"
             className="form-input"
             value={formData.specification}
-            readOnly
-          />
-        </div>
-
-        {/* ⏰ Shift */}
-        <div className="input-group">
-          <label className="form-label">شیفت</label>
-          <input
-            type="text"
-            className="form-input"
-            value={formData.shift}
             readOnly
           />
         </div>
@@ -444,6 +370,39 @@ function FirstPage() {
           </div>
         )}
 
+        {/* ⏰ Shift */}
+        <div className="input-group">
+          <label className="form-label">شیفت</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.shift}
+            readOnly
+          />
+        </div>
+
+        {/* 🪪 Doctor ID */}
+        <div className="input-group">
+          <label className="form-label">کد ملی پزشک</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.doctorIdCode}
+            readOnly
+          />
+        </div>
+
+        {/* 🏥 Medical System Code */}
+        <div className="input-group">
+          <label className="form-label">کد نظام پزشکی</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.medicalSystemCode}
+            readOnly
+          />
+        </div>
+
         <div className="input-group">
           <label className="form-label">لیست پرستاران</label>
           <select
@@ -458,21 +417,6 @@ function FirstPage() {
               </option>
             ))}
           </select>
-        </div>
-
-        <div className="input-group">
-          <label className="form-label">علائم حیاتی</label>
-          <textarea
-            name="vitalSignsOnAdmission"
-            value={formData.vitalSignsOnAdmission}
-            onChange={handleVitalSigns}
-            className="form-input"
-          />
-          {vitalSignsError && (
-            <div className="idError">
-              <p>علائم حیاتی باید کامل باشد</p>
-            </div>
-          )}
         </div>
 
         <div className="input-group">
@@ -506,6 +450,21 @@ function FirstPage() {
         </div>
 
         <div className="input-group">
+          <label className="form-label">علائم حیاتی</label>
+          <textarea
+            name="vitalSignsOnAdmission"
+            value={formData.vitalSignsOnAdmission}
+            onChange={handleVitalSigns}
+            className="form-input"
+          />
+          {vitalSignsError && (
+            <div className="idError">
+              <p>علائم حیاتی باید کامل باشد</p>
+            </div>
+          )}
+        </div>
+
+        <div className="input-group">
           <label className="form-label">شماره تخت</label>
           <input
             type="number"
@@ -514,6 +473,38 @@ function FirstPage() {
             onChange={handleBedNum}
             required
           />
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">وزن پذیرش</label>
+          <input
+            name="admissionWeight"
+            value={formData.admissionWeight}
+            onChange={handleWeight}
+            className="form-input"
+            onBlur={handleWeightBlur}
+          />
+          {weightError ? (
+            <div className="idError">
+              <p>وزن نامعتبر است</p>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">قد پذیرش</label>
+          <input
+            name="admissionHeight"
+            value={formData.admissionHeight}
+            onChange={handleHeight}
+            className="form-input"
+            onBlur={handleHeightBlur}
+          />
+          {heightError ? (
+            <div className="idError">
+              <p>قد نامعتبر است</p>
+            </div>
+          ) : null}
         </div>
 
         <div className="input-group">

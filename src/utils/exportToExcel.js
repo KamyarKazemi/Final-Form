@@ -21,13 +21,19 @@ export const addPatientToStorage = async (patient) => {
 // 📦 Export patients submitted today as an XLSX file
 export const exportPatientsForToday = async () => {
   try {
-    const today = new Date().toISOString().slice(0, 10);
+    // Get today's date in Persian calendar with Persian digits (Iran local time)
+    const iranDate = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    }).format(new Date());
+
     const res = await axios.get(API_URL);
     const allPatients = res.data;
 
     const patients = allPatients.filter((p) => {
       const ts = p.timestamp || p.date || p.createdAt;
-      return ts && ts.slice(0, 10) === today;
+      return ts && ts.slice(0, 10) === new Date().toISOString().slice(0, 10);
     });
 
     if (!patients.length) {
@@ -109,7 +115,8 @@ export const exportPatientsForToday = async () => {
     const buffer = XLSX.write(workbook, { type: "array", bookType: "xlsx" });
     const blob = new Blob([buffer], { type: "application/octet-stream" });
 
-    saveAs(blob, `اطلاعات_بیمار_${today}.xlsx`);
+    // Save file with Persian ICU patients and Iranian date in Persian digits
+    saveAs(blob, `اطلاعات بیماران ICU - ${iranDate}.xlsx`);
   } catch (error) {
     console.error("❌ Export failed:", error);
     alert("خطا در دریافت اطلاعات بیماران.");
