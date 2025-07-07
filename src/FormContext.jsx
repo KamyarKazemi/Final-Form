@@ -63,6 +63,9 @@ const defaultFormData = {
   nurseShift: "",
   nurseMedicalSystemCode: "",
   nurseIdCode: "",
+  systolicBP: "",
+  diastolicBP: "",
+  bloodPressure: "",
 };
 
 function Provider({ children }) {
@@ -1208,6 +1211,26 @@ function Provider({ children }) {
     }
   };
 
+  const handleSystolicBPChange = (e) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      systolicBP: value,
+      bloodPressure:
+        value && prev.diastolicBP ? `${value}/${prev.diastolicBP}` : "",
+    }));
+  };
+
+  const handleDiastolicBPChange = (e) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      diastolicBP: value,
+      bloodPressure:
+        prev.systolicBP && value ? `${prev.systolicBP}/${value}` : "",
+    }));
+  };
+
   const handleNurseChange = (e) => {
     const selectedId = e.target.value;
     setFormData((prev) => ({
@@ -1639,6 +1662,8 @@ function Provider({ children }) {
         nurses,
         handleHeightBlur,
         handleWeightBlur,
+        handleDiastolicBPChange,
+        handleSystolicBPChange,
       }}
     >
       {children}

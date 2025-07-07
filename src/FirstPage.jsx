@@ -53,6 +53,8 @@ function FirstPage() {
     nurses,
     handleHeightBlur,
     handleWeightBlur,
+    handleDiastolicBPChange,
+    handleSystolicBPChange,
   } = useContext(FormContext);
 
   const navigate = useNavigate();
@@ -535,6 +537,51 @@ function FirstPage() {
               <p>امتیاز APACHE II باید بین 0 تا 71 باشد</p>
             </div>
           ) : null}
+        </div>
+        <h2>فشار خون</h2>
+
+        <div className="input-group">
+          <label className="form-label">فشار سیستولیک</label>
+          <select
+            className="form-input"
+            value={formData.systolicBP}
+            onChange={handleSystolicBPChange}
+            required
+          >
+            <option value="">انتخاب کنید</option>
+            {Array.from({ length: 181 }, (_, i) => i + 40).map((val) => (
+              <option key={val} value={val}>
+                {val}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">فشار دیاستولیک</label>
+          <select
+            className="form-input"
+            value={formData.diastolicBP}
+            onChange={handleDiastolicBPChange}
+            required
+          >
+            <option value="">انتخاب کنید</option>
+            {Array.from({ length: 81 }, (_, i) => i + 40).map((val) => (
+              <option key={val} value={val}>
+                {val}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label className="form-label">فشار خون</label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.bloodPressure}
+            readOnly
+          />
         </div>
 
         <button type="submit" className="form-button">

@@ -93,6 +93,9 @@ export const exportPatientsForToday = async () => {
       nurseShift: "شیفت پرستار",
       nurseMedicalSystemCode: "کد نظام پزشکی پرستار",
       nurseIdCode: "کد ملی پرستار",
+      systolicBP: "فشار سیستولیک",
+      diastolicBP: "فشار دیاستولیک",
+      bloodPressure: "فشار خون",
     };
 
     const formatted = patients.map((p) => {
